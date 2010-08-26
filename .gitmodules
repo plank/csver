@@ -1,0 +1,3 @@
+[submodule "vendors/php-csv"]
+	path = vendors/php-csv
+	url = http://github.com/ockam/php-csv.git
