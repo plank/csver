@@ -3,7 +3,6 @@ class CsverController extends CsverAppController {
 
     var $debug = false;
 
-
     /**
      * CSV Index.
      *
@@ -25,31 +24,57 @@ class CsverController extends CsverAppController {
 
         App::import('Vendor', 'Csver.CsvWriter', array('file'=>'php-csv/csv.php'));
 
-        //Can define some custom types, ie: to load up certain data or whatnot
-        //@todo this is example, but implement when needed.
-        if(method_exists($this, 'admin_'.$type)) {
-            $filename = call_user_method('admin_'.$type, $this);
-        }
-        else {
-            //We don't use Controller::loadModel() due to bug where if successful, doesn't return true. 
-            //If this fails, will just get a 404 error, so we don't botherany extra checking. 
-            $model = ClassRegistry::init($type);
-            
+        //We don't use Controller::loadModel() due to bug where if successful, doesn't return true. 
+        //If this fails, will just get a 404 error, so we don't bother any extra checking. 
+        $model = ClassRegistry::init($type);
+        if(method_exists($model, 'csv')) {
             $data = $model->csv();
-            
-            $filename = tempnam(TMP, '');
-            $file = new CsvWriter($filename);
-            //Add header row
-            $file->addLine($data['header']);
-            foreach ($data['results'] as $line) {
-                $file->addLine($line[$type]);
-            }
+        } else{
+            $data = $this->csv($model);
         }
 
+        $filename = tempnam(TMP, '');
+        $file = new CsvWriter($filename);
+        //Add header row
+        $file->addLine($data['header']);
+        foreach ($data['results'] as $line) {
+            $file->addLine($line[$type]);
+        }
 
         $this->_output($filename);
     }
     
+    
+    /**
+     * This is the default find.
+     * If you want something other than the default, you can create this method on your model
+     * and just return the result and header
+     *
+     * @return array array('header', 'results');
+     **/
+    function csv($model) {
+    
+        $results = array(
+            'header' => array(),
+            'results' => array()
+        );
+        
+        //Gather the fields: Everything except ID
+        $fields = array_keys($model->_schema);
+        $idIndex = array_search('id', $fields, true);
+        if(false !== $idIndex) {
+            unset($fields[$idIndex]);
+        }
+
+        $data = $model->find('all', array('fields'=>$fields));
+
+        $results['header'] = $fields;
+        $results['results'] = $data;
+        
+        return $results;
+        
+    }
+
     
     /**
      * Send output headers.
@@ -83,7 +108,5 @@ class CsverController extends CsverAppController {
             unlink($filename);
         }
     }
-    
-    
-    
+
 }
