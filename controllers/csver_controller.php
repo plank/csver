@@ -35,20 +35,13 @@ class CsverController extends CsverAppController {
             //If this fails, will just get a 404 error, so we don't botherany extra checking. 
             $model = ClassRegistry::init($type);
             
-            //Gather the fields: Everything except ID
-            $fields = array_keys($model->_schema);
-            $idIndex = array_search('id', $fields, true);
-            if(false !== $idIndex) {
-                unset($fields[$idIndex]);
-            }
-
-            $data = $model->find('all', array('fields'=>$fields));
+            $data = $model->csv();
             
             $filename = tempnam(TMP, '');
             $file = new CsvWriter($filename);
             //Add header row
-            $file->addLine($fields);
-            foreach ($data as $line) {
+            $file->addLine($data['header']);
+            foreach ($data['results'] as $line) {
                 $file->addLine($line[$type]);
             }
         }
