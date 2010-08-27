@@ -1,0 +1,24 @@
+<?php
+/**
+ * Config file for CSVer CakePHP Plugin 
+ * http://github.com/plank/CSVer
+ *
+ * This should be put in your APP Config folder.
+ * Rename it csver.php 
+ *
+ */
+
+/**
+ * whitelist
+ *
+ * 2 Options:
+ *
+ * Array of Models allowed to be CSVed. If an model is not on this list, it will not be CSVable.
+ * $config['Csver']['whitelist'] = array('HcpAccess', 'Iplock', 'MediaAccess');
+ *
+ * OR
+ *
+ * To allow all models:
+ * $config['Csver']['whitelist'] = '*';
+ **/
+$config['Csver']['whitelist'] = array('HcpAccess', 'Iplock', 'MediaAccess');

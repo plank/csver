@@ -14,15 +14,24 @@ class CsverController extends CsverAppController {
         if(false == $this->debug) {
             Configure::write('debug', 0);
         }
-
+        
         if(!$type) {
             echo 'Model name missing';
             exit();
         }
 
+        Configure::load('csver');
+        if(is_null(Configure::read('Csver.whitelist'))) {
+            echo 'Did you set up the config file? Need whitelist of allowed CSV models.';
+            exit();
+        }
+
         $this->type = $type;
 
-        App::import('Vendor', 'Csver.CsvWriter', array('file'=>'php-csv/csv.php'));
+        if( ('*' !=Configure::read('Csver.whitelist')) && !in_array($type, Configure::read('Csver.whitelist'))) {
+            echo 'Not permitted. Not on whitelist.';
+            exit();
+        }
 
         //We don't use Controller::loadModel() due to bug where if successful, doesn't return true. 
         //If this fails, will just get a 404 error, so we don't bother any extra checking. 
@@ -34,6 +43,8 @@ class CsverController extends CsverAppController {
         }
 
         $filename = tempnam(TMP, '');
+
+        App::import('Vendor', 'Csver.CsvWriter', array('file'=>'php-csv/csv.php'));
         $file = new CsvWriter($filename);
         //Add header row
         $file->addLine($data['header']);
@@ -108,5 +119,6 @@ class CsverController extends CsverAppController {
             unlink($filename);
         }
     }
-
+    
+    
 }
