@@ -3,10 +3,12 @@ class CsverController extends CsverAppController {
 
     var $debug = false;
 
+    
+
     /**
      * CSV Index.
      *
-     * @param string $type Will look to see if method admin_$type exists, in which case, execute that, else look for a model by that name, and do generic output.
+     * @param string $type Model type. user for file name
      * 
      * @return void
      **/
