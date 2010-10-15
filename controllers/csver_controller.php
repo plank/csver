@@ -3,6 +3,14 @@ class CsverController extends CsverAppController {
 
     var $debug = false;
 
+    /**
+     * Alias for when not using admin routing. 
+     *
+     * @return void
+     **/
+    function index($type) {
+        $this->admin_index($type);
+    }
     
 
     /**
