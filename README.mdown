@@ -34,5 +34,4 @@ Add a csv method to any model in your app, and the plug will use that to fetch t
         return $results;
     }
 </pre>
-* Rigged up only for Admin routing right now. Open to any suggestions to make that friendlier for all.
-* Used in Cake 1.2. Haven't needed it for 1.3 yet. 
+* Used with Cake 1.2 & 1.3.
